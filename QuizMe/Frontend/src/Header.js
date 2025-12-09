@@ -1,22 +1,31 @@
+// Header.js
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context'; 
 
 const Header = () => {
+  const insets = useSafeAreaInsets();
+  
   return (
-    <View style={styles.header}>
-      <View style={styles.row}>
-        <Image source={require('./assets/logo.png')} style={styles.logo} />
-        <Text style={styles.title}>FLASHCARD QUIZ APP</Text>
+    <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
+      <View style={styles.headerContent}>
+        <View style={styles.row}>
+          <Image source={require('./assets/logo.png')} style={styles.logo} /> 
+          <Text style={styles.title}>FLASHCARD QUIZ APP</Text>
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    padding: 20,
-    backgroundColor: '#79bd9a',
+  headerContainer: {
+    backgroundColor: '#79bd9a', 
+    paddingHorizontal: 20, 
+    paddingBottom: 20,
     alignItems: 'center',
+  },
+  headerContent: {
   },
   row: {
     flexDirection: 'row',
@@ -33,7 +42,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'lightyellow',
-    
   },
 });
 

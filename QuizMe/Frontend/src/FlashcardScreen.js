@@ -1,9 +1,10 @@
+// FlashcardScreen.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
 const FlashcardScreen = ({ route, navigation }) => {
     const { quiz } = route.params;
-    const [revealed, setRevealed] = useState({}); // Track which cards are revealed
+    const [revealed, setRevealed] = useState({});
 
     const toggleReveal = (index) => {
         setRevealed((prev) => ({
@@ -27,7 +28,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     activeOpacity={0.8}
                 >
                     <Text style={styles.cardText}>
-                        {revealed[index] ? q.answer : q.question}
+                        {revealed[index] ? q.correctAnswer : q.questionString} 
                     </Text>
                 </TouchableOpacity>
             ))}
@@ -48,7 +49,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                         Answer This Quiz
                     </Text>
                 </TouchableOpacity>
-
             </View>
         </ScrollView>
     );
@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         width: '100%',
         elevation: 3,
+        minHeight: 150, 
+        justifyContent: 'center',
     },
     revealedCard: {
         backgroundColor: '#dcedc1',

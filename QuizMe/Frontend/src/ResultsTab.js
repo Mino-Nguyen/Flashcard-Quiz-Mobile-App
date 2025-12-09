@@ -1,3 +1,4 @@
+//ResultTab.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -31,7 +32,7 @@ const ResultsTab = () => {
     }, []);
 
     return (
-        <View style={{ padding: 20, backgroundColor: 'lightyellow' }}>
+        <View style={{ flex: 1, padding: 20, backgroundColor: 'lightyellow' }}>
             <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>
                 All Quiz Results
             </Text>
@@ -51,7 +52,8 @@ const ResultsTab = () => {
                                 {new Date(item.timestamp).toLocaleString()}
                             </Text>
                         </View>
-                    )}
+                    )} 
+                    style={{ flex: 1 }}
                 />
             )}
         </View>
