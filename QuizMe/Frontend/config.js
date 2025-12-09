@@ -1,1 +1,1 @@
-export const API_BASE_URL = 'https://organic-space-robot-4j747x7756xqfqpp4-3000.app.github.dev/';
+export const API_BASE_URL = 'https://organic-space-robot-4j747x7756xqfqpp4-3000.app.github.dev';

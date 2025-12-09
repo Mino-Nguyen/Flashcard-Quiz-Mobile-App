@@ -1,6 +1,6 @@
 // QuizList.js
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios'; 
 import { API_BASE_URL } from '../config'; 

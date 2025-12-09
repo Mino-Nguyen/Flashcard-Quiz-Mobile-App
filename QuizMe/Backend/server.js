@@ -12,11 +12,11 @@ const quizRoutes = require('./routes/quizRoutes');
 const attemptRoutes = require('./routes/attemptRoutes');
 const explanationRoutes = require('./routes/explanationRoutes');
 
-//1. Middleware Setup 
-app.use(cors()); // Allows cross-origin requests from your Expo app
-app.use(express.json()); // Allows parsing of JSON request bodies
+//Middleware Setup 
+app.use(cors()); 
+app.use(express.json()); 
 
-// 2. Database Connection 
+// Database Connection 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB Atlas!');
@@ -29,16 +29,16 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('Database connection error:', err);
   });
 
-// 3. Simple Test Route (Root) 
+// Simple Test Route (Root) 
 app.get('/', (req, res) => {
   res.send('Quiz Backend is Running!');
 });
 
-// 4. Route for Quiz Data (To be created in next step) 
+// oute for Quiz Data 
 app.use('/api/quizzes', quizRoutes);
 
-// 5. Route for Attempt Data  // 
+// Route for Attempt Data 
 app.use('/api/attempts', attemptRoutes);
 
-// 6. Route for AI Explanations //
-app.use('/api/explain', explanationRoutes);
+// Route for AI Explanations 
+app.use('/api/ai/explain', explanationRoutes);

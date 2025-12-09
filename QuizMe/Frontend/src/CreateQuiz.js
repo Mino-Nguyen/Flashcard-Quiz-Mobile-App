@@ -1,6 +1,6 @@
 // CreateQuiz.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
@@ -73,7 +73,7 @@ const CreateQuiz = () => {
         try {
             const url = `${API_BASE_URL}/api/quizzes`;
 
-            if (quiz?._id) { 
+            if (quiz?._id) {
                 await axios.patch(`${url}/${quiz._id}`, quizPayload);
                 Alert.alert('Updated!', `Quiz "${title}" has been successfully updated.`);
 
@@ -82,7 +82,7 @@ const CreateQuiz = () => {
                 Alert.alert('Saved!', `Quiz "${title}" has been saved.`);
             }
 
-            navigation.goBack(); 
+            navigation.goBack();
 
         } catch (error) {
             console.error('Error saving/updating quiz:', error.response ? error.response.data : error.message);
@@ -94,76 +94,84 @@ const CreateQuiz = () => {
 
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.header}>
-                {typeof index === 'number' ? 'Edit Quiz' : 'Create New Quiz'}
-            </Text>
+        <KeyboardAvoidingView
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} 
+    >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <ScrollView contentContainerStyle={styles.container}>
+                <Text style={styles.header}>
+                    {typeof index === 'number' ? 'Edit Quiz' : 'Create New Quiz'}
+                </Text>
 
-            <Text style={styles.label}>Quiz Title</Text>
-            <TextInput
-                placeholder="e.g., General Knowledge 101"
-                value={title}
-                onChangeText={setTitle}
-                style={styles.input}
-            />
+                <Text style={styles.label}>Quiz Title</Text>
+                <TextInput
+                    placeholder="e.g., General Knowledge 101"
+                    value={title}
+                    onChangeText={setTitle}
+                    style={styles.input}
+                />
 
-            {questions.map((q, i) => (
-                <View key={i} style={styles.questionBlock}>
-                    <Text style={styles.questionLabel}>Question {i + 1}</Text>
+                {questions.map((q, i) => (
+                    <View key={i} style={styles.questionBlock}>
+                        <Text style={styles.questionLabel}>Question {i + 1}</Text>
 
-                    <Text style={styles.label}>Question Text</Text>
-                    <TextInput
-                        placeholder="What is the capital of France?"
-                        value={q.questionString}
-                        onChangeText={(text) => handleChange(i, 'questionString', text)}
-                        style={styles.input}
-                    />
+                        <Text style={styles.label}>Question Text</Text>
+                        <TextInput
+                            placeholder="What is the capital of Vietnam?"
+                            value={q.questionString}
+                            onChangeText={(text) => handleChange(i, 'questionString', text)}
+                            style={styles.input}
+                        />
 
-                    <Text style={styles.label}>Correct Answer</Text>
-                    <TextInput
-                        placeholder="Paris"
-                        value={q.correctAnswer}
-                        onChangeText={(text) => handleChange(i, 'correctAnswer', text)}
-                        style={[styles.input, styles.correctInput]}
-                    />
+                        <Text style={styles.label}>Correct Answer</Text>
+                        <TextInput
+                            placeholder="Hanoi"
+                            value={q.correctAnswer}
+                            onChangeText={(text) => handleChange(i, 'correctAnswer', text)}
+                            style={[styles.input, styles.correctInput]}
+                        />
 
-                    <Text style={styles.label}>Incorrect Answer 1</Text>
-                    <TextInput
-                        placeholder="Berlin"
-                        value={q.incorrectAnswers[0]}
-                        onChangeText={(text) => handleChange(i, 'incorrectAnswers', text, 0)}
-                        style={styles.input}
-                    />
+                        <Text style={styles.label}>Incorrect Answer 1</Text>
+                        <TextInput
+                            placeholder="Ho Chi Minh City"
+                            value={q.incorrectAnswers[0]}
+                            onChangeText={(text) => handleChange(i, 'incorrectAnswers', text, 0)}
+                            style={styles.input}
+                        />
 
-                    <Text style={styles.label}>Incorrect Answer 2</Text>
-                    <TextInput
-                        placeholder="Madrid"
-                        value={q.incorrectAnswers[1]}
-                        onChangeText={(text) => handleChange(i, 'incorrectAnswers', text, 1)}
-                        style={styles.input}
-                    />
-                </View>
-            ))}
+                        <Text style={styles.label}>Incorrect Answer 2</Text>
+                        <TextInput
+                            placeholder="Da Nang City"
+                            value={q.incorrectAnswers[1]}
+                            onChangeText={(text) => handleChange(i, 'incorrectAnswers', text, 1)}
+                            style={styles.input}
+                        />
+                    </View>
+                ))}
 
-            <TouchableOpacity onPress={addField} style={[styles.button, styles.addMoreButton]}>
-                <Text style={styles.buttonText}>+ Add Another Question</Text>
-            </TouchableOpacity>
-
-            <View style={{ marginTop: 10 }}>
-                <TouchableOpacity
-                    onPress={handleSubmit}
-                    style={[styles.button, isSubmitting && styles.buttonDisabled]}
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <ActivityIndicator color="white" />
-                    ) : (
-                        <Text style={styles.buttonText}>Save Quiz</Text>
-                    )}
+                <TouchableOpacity onPress={addField} style={[styles.button, styles.addMoreButton]}>
+                    <Text style={styles.buttonText}>+ Add Another Question</Text>
                 </TouchableOpacity>
-            </View>
 
-        </ScrollView>
+                <View style={{ marginTop: 10 }}>
+                    <TouchableOpacity
+                        onPress={handleSubmit}
+                        style={[styles.button, isSubmitting && styles.buttonDisabled]}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <ActivityIndicator color="white" />
+                        ) : (
+                            <Text style={styles.buttonText}>Save Quiz</Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+
+            </ScrollView>
+        </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 
