@@ -7,7 +7,7 @@ const questionSchema = require('./Question');
 const quizSchema = new mongoose.Schema({
   category: {
     type: String,
-    required: true
+    required: false
   },
   
   // Array of sub-documents using the nested schema

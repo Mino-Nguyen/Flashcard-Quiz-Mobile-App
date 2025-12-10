@@ -1,6 +1,7 @@
 // QuizReviewScreen.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 

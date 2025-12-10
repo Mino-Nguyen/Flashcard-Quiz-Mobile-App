@@ -1,9 +1,12 @@
 // FlashcardScreen.js
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
 const FlashcardScreen = ({ route, navigation }) => {
     const { quiz } = route.params;
+    const initialShuffledQuestions = useMemo(() => shuffleArray(quiz.questions), [quiz.questions]);
+
+    const [shuffledQuestions, setShuffledQuestions] = useState(initialShuffledQuestions);
     const [revealed, setRevealed] = useState({});
 
     const toggleReveal = (index) => {
@@ -12,14 +15,25 @@ const FlashcardScreen = ({ route, navigation }) => {
             [index]: !prev[index],
         }));
     };
+    
+    // Shuffle the cards again
+    const handleShuffle = useCallback(() => {
+        setShuffledQuestions(shuffleArray(quiz.questions));
+        setRevealed({}); 
+    }, [quiz.questions]);
+
+    // Reset all cards to non-revealed state
+    const handleReset = useCallback(() => {
+        setRevealed({});
+    }, []);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>{quiz.title}</Text>
 
-            {quiz.questions.map((q, index) => (
+            {shuffledQuestions.map((q, index) => (
                 <TouchableOpacity
-                    key={index}
+                    key={q.questionString + index}
                     onPress={() => toggleReveal(index)}
                     style={[
                         styles.card,
@@ -34,18 +48,26 @@ const FlashcardScreen = ({ route, navigation }) => {
             ))}
 
             <View style={styles.controls}>
+                
                 <TouchableOpacity
-                    style={{
-                        backgroundColor: '#79bd9a',
-                        paddingVertical: 12,
-                        paddingHorizontal: 20,
-                        borderRadius: 8,
-                        alignItems: 'center',
-                        marginVertical: 10,
-                    }}
+                    style={[styles.controlButton, styles.shuffleButton]}
+                    onPress={handleShuffle}
+                >
+                    <Text style={styles.controlButtonText}>Shuffle Cards</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.controlButton, styles.resetButton]}
+                    onPress={handleReset}
+                >
+                    <Text style={styles.controlButtonText}>Reset View</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                    style={styles.answerQuizButton} 
                     onPress={() => navigation.navigate('AnswerScreen', { quiz })}
                 >
-                    <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                    <Text style={styles.answerQuizButtonText}>
                         Answer This Quiz
                     </Text>
                 </TouchableOpacity>
@@ -88,6 +110,44 @@ const styles = StyleSheet.create({
         marginTop: 30,
         width: '100%',
     },
+controls: {
+        marginTop: 30,
+        width: '100%',
+    },
+    controlButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginVertical: 5,
+        borderWidth: 1,
+    },
+    shuffleButton: {
+        backgroundColor: '#3b8686', 
+        borderColor: '#3b8686',
+    },
+    resetButton: {
+        backgroundColor: '#f5f5f5', 
+        borderColor: '#3b8686',
+    },
+    controlButtonText: {
+        color: 'white',
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    answerQuizButton: {
+        backgroundColor: '#79bd9a',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    answerQuizButtonText: {
+        color: 'white', 
+        fontSize: 16, 
+        fontWeight: 'bold' 
+    }
 });
 
 export default FlashcardScreen;

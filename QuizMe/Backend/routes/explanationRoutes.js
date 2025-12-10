@@ -10,12 +10,12 @@ const openai = new OpenAI({
 });
 
 // POST route to generate an explanation
-router.post('/', async (req, res) => {
+router.post('/explain', async (req, res) => {
     // Get data from the Expo app's request body
-    const { questionText, options, correctAnswer } = req.body;
+    const { questionText, options, correctAnswer, userAnswer } = req.body;
 
-    if (!questionText || !correctAnswer) {
-        return res.status(400).json({ message: "Missing question details." });
+    if (!questionText || !correctAnswer || !userAnswer) {
+        return res.status(400).json({ message: "Missing question details: questionText, correctAnswer, or userAnswer." });
     }
 
     // Construct the prompt using the Chat Completion format

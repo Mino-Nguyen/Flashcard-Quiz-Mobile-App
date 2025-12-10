@@ -41,4 +41,4 @@ app.use('/api/quizzes', quizRoutes);
 app.use('/api/attempts', attemptRoutes);
 
 // Route for AI Explanations 
-app.use('/api/ai/explain', explanationRoutes);
+app.use('/api/ai', explanationRoutes);

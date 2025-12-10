@@ -56,20 +56,25 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-// DELETE QUIZ 
+//  Delete a quiz
 router.delete('/:id', async (req, res) => {
-  try {
-    const deletedQuiz = await Quiz.findByIdAndDelete(req.params.id);
+    try {
+        const { id } = req.params;
+        
+        const deletedQuiz = await Quiz.findByIdAndDelete(id);
 
-    if (deletedQuiz == null) {
-      return res.status(404).json({ message: 'Quiz not found' });
+        if (!deletedQuiz) {
+            return res.status(404).json({ message: 'Quiz not found.' });
+        }
+
+        // Success: Send a 204 No Content status, or the deleted object
+        res.status(200).json({ message: 'Quiz successfully deleted.' });
+
+    } catch (error) {
+        console.error('Error deleting quiz:', error);
+        // Handle invalid ID format error (e.g., CastError)
+        res.status(500).json({ message: 'Failed to delete quiz due to server error or invalid ID format.' });
     }
-
-    // Success, but no content to return
-    res.status(204).send(); 
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
 });
 
 module.exports = router;

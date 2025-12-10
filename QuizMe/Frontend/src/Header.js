@@ -11,7 +11,7 @@ const Header = () => {
       <View style={styles.headerContent}>
         <View style={styles.row}>
           <Image source={require('./assets/logo.png')} style={styles.logo} /> 
-          <Text style={styles.title}>FLASHCARD QUIZ APP</Text>
+          <Text style={styles.title}>QUIZ APP</Text>
         </View>
       </View>
     </View>
