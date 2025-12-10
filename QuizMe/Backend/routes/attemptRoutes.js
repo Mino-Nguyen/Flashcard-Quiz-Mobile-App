@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const attempts = await Attempt.find()
-            .populate({ path: 'quizId', select: 'title' })
+            .populate({ path: 'quizId', select: 'category' })
             .sort({ attemptedAt: -1 }); 
         
         res.json(attempts);

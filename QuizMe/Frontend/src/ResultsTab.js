@@ -53,11 +53,10 @@ const ResultsTab = () => {
                 ) : (
                     <FlatList
                         data={results}
-                        keyExtractor={(item) => item._id} // Key by the MongoDB ID
+                        keyExtractor={(item) => item._id} 
                         renderItem={({ item }) => (
                             <View style={styles.resultItem}>
                                 <Text style={styles.quizTitle}>
-                                    {/* Accessing the populated Quiz title and the stored percentage */}
                                     {item.quizId.title}: <Text style={styles.resultPercentage}>{item.resultPercentage}%</Text>
                                 </Text>
                                 <Text style={styles.timestampText}>
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
         fontSize: 18 
     },
     resultPercentage: {
-        color: '#3b8686', // Accent color
+        color: '#3b8686',
         fontWeight: '900',
     },
     timestampText: { 

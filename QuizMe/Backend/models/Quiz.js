@@ -1,13 +1,12 @@
 // models/Quiz.js
 const mongoose = require('mongoose');
-// Import the nested schema
 const questionSchema = require('./Question'); 
 
 // Defines the structure for the entire quiz document
 const quizSchema = new mongoose.Schema({
   category: {
     type: String,
-    required: false
+    required: true
   },
   
   // Array of sub-documents using the nested schema

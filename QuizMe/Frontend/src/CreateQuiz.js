@@ -11,7 +11,7 @@ const CreateQuiz = () => {
     const route = useRoute();
     const { quiz, index } = route.params || {};
 
-    const [title, setTitle] = useState(quiz?.title || '');
+    const [category, setCategory] = useState(quiz?.category || '');
     const initialQuestions = quiz?.questions.map((q, i) => ({
         questionString: q.questionString || q.question || '',
         correctAnswer: q.correctAnswer || q.answer || '',
@@ -40,8 +40,8 @@ const CreateQuiz = () => {
     };
 
     const handleSubmit = async () => {
-        if (!title.trim()) {
-            Alert.alert('Missing Title', 'Please enter a quiz title.');
+        if (!category.trim()) {
+            Alert.alert('Missing category', 'Please enter a quiz category.');
             return;
         }
 
@@ -61,7 +61,7 @@ const CreateQuiz = () => {
 
         // Prepare the data payload for MongoDB 
         const quizPayload = {
-            title: title.trim(),
+            category: category.trim(),
             questions: questions.map(q => ({
                 questionNumber: q.questionNumber,
                 questionString: q.questionString.trim(),
@@ -75,11 +75,11 @@ const CreateQuiz = () => {
 
             if (quiz?._id) {
                 await axios.patch(`${url}/${quiz._id}`, quizPayload);
-                Alert.alert('Updated!', `Quiz "${title}" has been successfully updated.`);
+                Alert.alert('Updated!', `Quiz "${category}" has been successfully updated.`);
 
             } else {
                 await axios.post(url, quizPayload);
-                Alert.alert('Saved!', `Quiz "${title}" has been saved.`);
+                Alert.alert('Saved!', `Quiz "${category}" has been saved.`);
             }
 
             navigation.goBack();
@@ -105,11 +105,11 @@ const CreateQuiz = () => {
                     {typeof index === 'number' ? 'Edit Quiz' : 'Create New Quiz'}
                 </Text>
 
-                <Text style={styles.label}>Quiz Title</Text>
+                <Text style={styles.label}>Quiz category</Text>
                 <TextInput
-                    placeholder="e.g., General Knowledge 101"
-                    value={title}
-                    onChangeText={setTitle}
+                    placeholder="Geography"
+                    value={category}
+                    onChangeText={setCategory}
                     style={styles.input}
                 />
 

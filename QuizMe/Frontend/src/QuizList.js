@@ -13,8 +13,7 @@ const QuizList = () => {
   const navigation = useNavigation();
 
   const handleQuizPress = (quiz) => {
-    // navigation.navigate('FlashcardScreen')
-    navigation.navigate('AnswerScreen', { quiz: quiz })
+    return () => navigation.navigate('FlashcardScreen', { quiz: quiz });
   }
 
   // Use useCallback
@@ -47,7 +46,7 @@ const QuizList = () => {
   const deleteQuiz = (idToDelete) => {
     Alert.alert(
       "Confirm Delete",
-      "Are you sure you want to delete this quiz permanently?",
+      `Are you sure you want to delete the quiz "${categoryName}" permanently?`,
       [
         {
           text: "Cancel",
@@ -60,17 +59,19 @@ const QuizList = () => {
             try {
               const url = `${API_BASE_URL}/api/quizzes/${idToDelete}`;
               await axios.delete(url);
-              setQuizzes(prevQuizzes => prevQuizzes.filter(q => q._id !== idToDelete));
+              
+              setQuizzes(prevQuizzes =>
+                prevQuizzes.filter(quiz => quiz._id !== idToDelete)
+              );
 
-              Alert.alert("Deleted", "Quiz successfully deleted.");
+              Alert.alert("Deleted", `Quiz "${categoryName}" successfully deleted.`);
 
             } catch (error) {
               console.error('Failed to delete quiz:', error.response ? error.response.data : error.message);
-              Alert.alert('Error', 'Failed to delete quiz on the server.');
+              // Fallback error message
+              Alert.alert('Error', 'Failed to delete quiz on the server. Check your network and server logs.');
 
               loadQuizzes();
-            } finally {
-              setLoading(false);
             }
           }
         }
@@ -98,13 +99,15 @@ const QuizList = () => {
     );
   }
 
-  const renderItem = ({ item, index }) => (
-    <View style={styles.quizItem}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('FlashcardScreen', { quiz: item })}
-      >
-        <Text style={styles.quizTitle}>{item.title}</Text>
-      </TouchableOpacity>
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      key={item._id}
+      style={styles.quizItem}
+      onPress={handleQuizPress(item)}
+    >
+      <View style={styles.titleContainer}>
+        <Text style={styles.quizTitle}>{item.category}</Text>
+      </View>
 
       <View style={styles.buttonGroup}>
         <TouchableOpacity
@@ -114,15 +117,14 @@ const QuizList = () => {
           <Text style={{ color: 'white' }}>Edit</Text>
         </TouchableOpacity>
 
-        {/* 🚨 Ensure the delete function is called with the ID and Title */}
         <TouchableOpacity
-          onPress={() => deleteQuiz(item._id, item.title)}
+          onPress={() => deleteQuiz(item._id, item.category)}
           style={styles.deleteButton}
         >
           <Text style={{ color: 'white' }}>Delete</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -150,6 +152,10 @@ const QuizList = () => {
 };
 
 const styles = StyleSheet.create({
+  titleContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
   mainContainer: {
     flex: 1,
   },
@@ -199,7 +205,6 @@ const styles = StyleSheet.create({
   },
   quizTitle: {
     fontSize: 18,
-    maxWidth: '70%',
   },
   deleteButton: {
     backgroundColor: 'lightcoral',

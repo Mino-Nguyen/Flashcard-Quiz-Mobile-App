@@ -2,6 +2,20 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
+const shuffleArray = (array) => {
+    let currentIndex = array.length, randomIndex;
+    let newArray = [...array];
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        // Swap elements
+        [newArray[currentIndex], newArray[randomIndex]] = [
+            newArray[randomIndex], newArray[currentIndex]
+        ];
+    }
+    return newArray;
+};
+
 const FlashcardScreen = ({ route, navigation }) => {
     const { quiz } = route.params;
     const initialShuffledQuestions = useMemo(() => shuffleArray(quiz.questions), [quiz.questions]);
@@ -15,6 +29,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             [index]: !prev[index],
         }));
     };
+
     
     // Shuffle the cards again
     const handleShuffle = useCallback(() => {
@@ -29,7 +44,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>{quiz.title}</Text>
+            <Text style={styles.title}>{quiz.category}</Text>
 
             {shuffledQuestions.map((q, index) => (
                 <TouchableOpacity
@@ -106,10 +121,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#333',
     },
-    controls: {
-        marginTop: 30,
-        width: '100%',
-    },
 controls: {
         marginTop: 30,
         width: '100%',
@@ -134,6 +145,9 @@ controls: {
         color: 'white',
         fontSize: 15,
         fontWeight: 'bold',
+    },
+    resetText: {
+        color: '#3b8686', 
     },
     answerQuizButton: {
         backgroundColor: '#79bd9a',

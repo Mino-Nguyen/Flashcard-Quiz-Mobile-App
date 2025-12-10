@@ -41,6 +41,11 @@ const AnswerScreen = () => {
     };
 
     const handleSubmit = async () => {
+if (!quiz || !quiz._id) {
+        Alert.alert('Error', 'Quiz information is incomplete. Cannot submit attempt.');
+        return;
+    }
+
         if (selectedAnswers.includes(null)) {
             Alert.alert('Incomplete Quiz', 'Please answer all questions before submitting.');
             return;
@@ -72,7 +77,7 @@ const AnswerScreen = () => {
         const resultPercentage = Math.round((correctCount / total) * 100);
 
         const attemptPayload = {
-            quizId: quiz.id || quiz._id, 
+            quizId: quiz._id, 
             resultPercentage: resultPercentage,
             answers: attemptAnswers,
         };
@@ -105,7 +110,7 @@ const AnswerScreen = () => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>
-                Answer Quiz: {quiz.title}
+                Answer Quiz: {quiz.category}
             </Text>
 
             {quiz.questions.map((q, i) => {

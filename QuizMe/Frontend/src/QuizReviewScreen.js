@@ -70,7 +70,7 @@ const QuizReviewScreen = ({ route }) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Review: {quiz.title}</Text>
+            <Text style={styles.title}>Review: {quiz.category}</Text>
 
             {quiz.questions.map((q, i) => {
                 const userAnswer = answers[i]?.trim().toLowerCase();
