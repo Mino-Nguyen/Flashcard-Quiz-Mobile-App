@@ -43,10 +43,10 @@ const QuizList = () => {
     }, [loadQuizzes])
   );
 
-  const deleteQuiz = (idToDelete) => {
+  const deleteQuiz = (idToDelete, category) => {
     Alert.alert(
       "Confirm Delete",
-      `Are you sure you want to delete the quiz "${categoryName}" permanently?`,
+      `Are you sure you want to delete the quiz "${category}" permanently?`,
       [
         {
           text: "Cancel",
@@ -64,7 +64,7 @@ const QuizList = () => {
                 prevQuizzes.filter(quiz => quiz._id !== idToDelete)
               );
 
-              Alert.alert("Deleted", `Quiz "${categoryName}" successfully deleted.`);
+              Alert.alert("Deleted", `Quiz "${category}" successfully deleted.`);
 
             } catch (error) {
               console.error('Failed to delete quiz:', error.response ? error.response.data : error.message);

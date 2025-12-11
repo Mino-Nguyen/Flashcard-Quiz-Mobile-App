@@ -1,8 +1,8 @@
 // AnswerScreen.js
 import React, { useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native'; import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import axios from 'axios'; 
+import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 // Simple function to shuffle an array
@@ -23,9 +23,9 @@ const AnswerScreen = () => {
     const navigation = useNavigation();
 
     const { quiz } = useRoute().params;
-    
+
     const [selectedAnswers, setSelectedAnswers] = useState(Array(quiz.questions.length).fill(null));
-    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const shuffledOptions = useMemo(() => {
         return quiz.questions.map(q => {
@@ -41,10 +41,10 @@ const AnswerScreen = () => {
     };
 
     const handleSubmit = async () => {
-if (!quiz || !quiz._id) {
-        Alert.alert('Error', 'Quiz information is incomplete. Cannot submit attempt.');
-        return;
-    }
+        if (!quiz || !quiz._id) {
+            Alert.alert('Error', 'Quiz information is incomplete. Cannot submit attempt.');
+            return;
+        }
 
         if (selectedAnswers.includes(null)) {
             Alert.alert('Incomplete Quiz', 'Please answer all questions before submitting.');
@@ -56,11 +56,11 @@ if (!quiz || !quiz._id) {
         // CALCULATE SCORE & FORMAT DATA
         const total = quiz.questions.length;
         let correctCount = 0;
-        
+
         const attemptAnswers = quiz.questions.map((q, i) => {
             const userAnswer = selectedAnswers[i];
             const isCorrect = userAnswer?.trim().toLowerCase() === q.correctAnswer?.trim().toLowerCase();
-            
+
             if (isCorrect) {
                 correctCount++;
             }
@@ -77,19 +77,19 @@ if (!quiz || !quiz._id) {
         const resultPercentage = Math.round((correctCount / total) * 100);
 
         const attemptPayload = {
-            quizId: quiz._id, 
+            quizId: quiz._id,
             resultPercentage: resultPercentage,
             answers: attemptAnswers,
         };
-        
+
         // POST DATA TO BACKEND
         try {
             const url = `${API_BASE_URL}/api/attempts`;
-            
+
             // The POST request sends the final formatted data
             const response = await axios.post(url, attemptPayload);
-            
-            console.log('Attempt saved with ID:', response.data._id); 
+
+            console.log('Attempt saved with ID:', response.data._id);
 
             // NAVIGATE TO REVIEW SCREEN
             navigation.navigate('QuizReviewScreen', {
@@ -103,7 +103,7 @@ if (!quiz || !quiz._id) {
             console.error('Backend Submission Error:', error.response ? error.response.data : error.message);
             Alert.alert('Submission Error', 'Failed to save your quiz attempt to the server.');
         } finally {
-            setIsSubmitting(false); 
+            setIsSubmitting(false);
         }
     };
 
@@ -116,11 +116,11 @@ if (!quiz || !quiz._id) {
             {quiz.questions.map((q, i) => {
                 const options = shuffledOptions[i];
                 const selected = selectedAnswers[i];
-                
+
                 return (
                     <View key={i} style={styles.questionBlock}>
                         <Text style={styles.questionText}>{i + 1}. {q.questionString}</Text>
-                        
+
                         {options.map((option, j) => (
                             <TouchableOpacity
                                 key={j}
@@ -136,7 +136,7 @@ if (!quiz || !quiz._id) {
                     </View>
                 );
             })}
-            
+
             <TouchableOpacity
                 onPress={handleSubmit}
                 style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
     },
     optionSelected: {
-        backgroundColor: '#79bd9a', 
+        backgroundColor: '#79bd9a',
         borderColor: '#5c8f74',
     },
     optionText: {
@@ -208,8 +208,8 @@ const styles = StyleSheet.create({
         marginTop: 30,
         marginBottom: 50,
     },
-    submitButtonDisabled: { 
-        backgroundColor: '#a8a8a8', 
+    submitButtonDisabled: {
+        backgroundColor: '#a8a8a8',
     },
     submitButtonText: {
         color: 'white',

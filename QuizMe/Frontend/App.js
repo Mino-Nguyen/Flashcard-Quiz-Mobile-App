@@ -21,7 +21,11 @@ export default function App() {
           <Stack.Screen name="CreateQuiz" component={CreateQuiz} options={{ title: 'Create New Quiz' }} />
           <Stack.Screen name="FlashcardScreen" component={FlashcardScreen} />
           <Stack.Screen name="AnswerScreen" component={AnswerScreen} />
-          <Stack.Screen name="QuizReviewScreen" component={QuizReviewScreen} />
+          <Stack.Screen name="QuizReviewScreen" 
+        component={QuizReviewScreen} 
+        options={{ 
+            headerBackButtonMenuEnabled: false, 
+        }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -1,9 +1,20 @@
 // QuizReviewScreen.js
 import React, { useState } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
+
+const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str)
+        .trim()
+        .toLowerCase()
+        .normalize('NFD') // Normalizes Unicode characters
+        .replace(/[\u0300-\u036f]/g, "") // Removes diacritics (accents)
+        .replace(/[^a-z0-9\s]/g, '') // Optionally remove punctuation (if you want "c++" to match "c plus plus")
+        .replace(/\s+/g, ' '); // Consolidate multiple spaces
+};
 
 const QuizReviewScreen = ({ route }) => {
     const { quiz, answers } = route.params;
@@ -14,15 +25,17 @@ const QuizReviewScreen = ({ route }) => {
     const [loadingIndex, setLoadingIndex] = useState(null);
 
     // Prevent user from going back to the AnswerScreen mid-review 
-    useFocusEffect(
-        React.useCallback(() => {
-            const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-                e.preventDefault();
-                navigation.navigate('Main');
-            });
-            return unsubscribe;
-        }, [navigation])
-    );
+    React.useLayoutEffect(() => {
+        // Disables the swipe gesture and the native back button
+        navigation.setOptions({
+            gestureEnabled: false,
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+                    <Text style={{ color: 'white', fontSize: 16 }}>Done</Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
     // Fetch AI explaination
     const fetchExplanation = async (question, index) => {
@@ -39,34 +52,30 @@ const QuizReviewScreen = ({ route }) => {
         }
 
         setLoadingIndex(index);
-        const userAnswer = answers[index];
+        const userAnswerObject = answers[index];
+        const userAnswerString = userAnswerObject?.userAnswer || "No Answer Selected";
 
         const payload = {
             questionText: question.questionString,
             correctAnswer: question.correctAnswer,
-            userAnswer: userAnswer,
+            userAnswer: userAnswerString,
             options: [question.correctAnswer, ...(question.incorrectAnswers || [])]
         };
 
         try {
-            const url = `${API_BASE_URL}/api/gemma-explain`;
-const prompt = `Based on the quiz question and its correct answer, provide a concise, single-paragraph explanation suitable for a flashcard study app.
-            Question: "${question.questionString}"
-            Correct Answer: "${question.correctAnswer}"
+            const url = `${API_BASE_URL}/api/ai/explain`;
 
-            Explanation:`;
+            const response = await axios.post(url, payload);
 
-            const response = await axios.post(url, { prompt });
-
-            const explanationText = response.data.explanation || response.data.text; 
+            const explanationText = response.data.explanation;
 
             setExplanations(prev => ({
                 ...prev,
-                [index]: explanationText || 'Gemma failed to generate an explanation.',
+                [index]: explanationText || 'Failed to generate an explanation.',
             }));
         } catch (error) {
-            console.error('Gemma API Call Failed:', error.response?.data || error.message);
-            Alert.alert('AI Error', 'Failed to fetch explanation from the server. Check your backend Gemma integration.');
+            console.error('API Call Failed:', error.response?.data || error.message);
+            Alert.alert('AI Error', 'Failed to fetch explanation from the server. Please check console for details.');
         } finally {
             setLoadingIndex(null);
         }
@@ -77,8 +86,23 @@ const prompt = `Based on the quiz question and its correct answer, provide a con
             <Text style={styles.title}>Review: {quiz.category}</Text>
 
             {quiz.questions.map((q, i) => {
-                const userAnswer = answers[i]?.trim().toLowerCase();
-                const correctAnswer = q.correctAnswer?.trim().toLowerCase();
+                let rawUserAnswer = null;
+                const answerItem = answers[i];
+
+                if (answerItem) {
+                    if (typeof answerItem === 'object' && answerItem.userAnswer) {
+                        rawUserAnswer = answerItem.userAnswer;
+                    }
+                    else if (typeof answerItem === 'string') {
+                        rawUserAnswer = answerItem;
+                    }
+                }
+
+                const userAnswer = normalizeString(rawUserAnswer);
+
+                const rawCorrectAnswer = q.correctAnswer;
+                const correctAnswer = normalizeString(rawCorrectAnswer);
+
                 const isCorrect = userAnswer === correctAnswer;
                 const isCurrentlyLoading = loadingIndex === i;
                 const hasExplanation = !!explanations[i];
@@ -88,7 +112,8 @@ const prompt = `Based on the quiz question and its correct answer, provide a con
                         <Text style={styles.question}>Q{i + 1}: {q.questionString}</Text>
 
                         <Text style={styles.answer}>
-                            Your answer: <Text style={{ fontWeight: 'bold', color: isCorrect ? 'darkgreen' : 'darkred' }}>{answers[i]}</Text>
+                            Your answer: <Text style={{ fontWeight: 'bold', color: isCorrect ? 'darkgreen' : 'darkred' }}>
+                                {rawUserAnswer || 'No Answer Selected'}</Text>
                         </Text>
 
                         <Text style={styles.answer}>
@@ -102,7 +127,7 @@ const prompt = `Based on the quiz question and its correct answer, provide a con
                             onPress={() => fetchExplanation(q, i)}
                             style={[
                                 styles.aiButton,
-                                isCurrentlyLoading && styles.aiButtonDisabled, 
+                                isCurrentlyLoading && styles.aiButtonDisabled,
                             ]}
                             disabled={isCurrentlyLoading}
                         >
