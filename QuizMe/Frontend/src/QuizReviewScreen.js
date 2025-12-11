@@ -26,7 +26,6 @@ const QuizReviewScreen = ({ route }) => {
 
     // Fetch AI explaination
     const fetchExplanation = async (question, index) => {
-        // Prevent re-fetch if loading or already loaded (toggle behavior)
         if (loadingIndex === index) return;
 
         //If explanation is already visible, hide it.
@@ -50,19 +49,24 @@ const QuizReviewScreen = ({ route }) => {
         };
 
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/ai/explain`, payload);
+            const url = `${API_BASE_URL}/api/gemma-explain`;
+const prompt = `Based on the quiz question and its correct answer, provide a concise, single-paragraph explanation suitable for a flashcard study app.
+            Question: "${question.questionString}"
+            Correct Answer: "${question.correctAnswer}"
+
+            Explanation:`;
+
+            const response = await axios.post(url, { prompt });
+
+            const explanationText = response.data.explanation || response.data.text; 
 
             setExplanations(prev => ({
                 ...prev,
-                [index]: response.data.explanation,
+                [index]: explanationText || 'Gemma failed to generate an explanation.',
             }));
-
         } catch (error) {
-            console.error("AI Explanation Error:", error.response?.data || error.message);
-            setExplanations(prev => ({
-                ...prev,
-                [index]: "Failed to load explanation. Check your network connection or server.",
-            }));
+            console.error('Gemma API Call Failed:', error.response?.data || error.message);
+            Alert.alert('AI Error', 'Failed to fetch explanation from the server. Check your backend Gemma integration.');
         } finally {
             setLoadingIndex(null);
         }
